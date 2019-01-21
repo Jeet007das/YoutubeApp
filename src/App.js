@@ -1,26 +1,41 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import SearchBar from './Components/SearchBar';
+import Youtube from './Apis/Youtube';
+import VideoList from './Components/VideoList';
+
 
 class App extends Component {
+
+  state = {
+    videos: [],
+    selectedVideo:null
+  }
+
+  submitForm = async searchValue => {
+    console.log(searchValue);
+    const response = await Youtube.get('/search', {
+      params: {
+        q: searchValue
+      }
+    });
+    this.setState({ videos: response.data.items });
+ }
+
+ selectedVideo = (video) =>{
+    this.setState({
+      selectedVideo:video
+    })
+ }
+
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+        <SearchBar onFormSubmit={this.submitForm} />
+        <VideoList selectVideo={this.state.selectedVideo} selectedVideo={this.selectedVideo} videoList={this.state.videos}/>
+       </div>
     );
   }
 }
